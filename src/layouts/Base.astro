@@ -1,0 +1,68 @@
+---
+import { isPublic, siteTitle, siteTagline } from '../lib/config';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = `${siteTitle}: ${siteTagline.toLowerCase()}` } = Astro.props;
+const pageTitle = title ? `${title} · ${siteTitle}` : `${siteTitle} · ${siteTagline}`;
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/artigos/', label: 'Artigos' },
+  { href: '/publicacoes/', label: 'Publicações' },
+  { href: '/anos/', label: 'Anos' },
+  { href: '/temas/', label: 'Temas' },
+  { href: '/pesquisa/', label: 'Pesquisa' },
+];
+---
+
+<!doctype html>
+<html lang="pt-PT">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    {!isPublic && <meta name="robots" content="noindex, nofollow, noarchive" />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="/">
+          <span class="brand-name">{siteTitle}</span>
+          <span class="brand-tag">{siteTagline}</span>
+        </a>
+        <nav aria-label="Principal">
+          <ul>
+            {
+              nav.map((item) => (
+                <li>
+                  <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </div>
+    </header>
+    <main id="conteudo" class="wrap">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="wrap">
+        <p>
+          Textos de Marlene Rendeiro, publicados originalmente nos meios indicados em cada artigo.
+          {!isPublic && <span> Arquivo privado.</span>}
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

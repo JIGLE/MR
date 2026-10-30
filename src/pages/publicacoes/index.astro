@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getArticles, getOutlets } from '../../lib/articles';
+
+const articles = await getArticles();
+const outlets = (await getOutlets())
+  .map((outlet) => ({ outlet, count: articles.filter((a) => a.data.outlet.id === outlet.id).length }))
+  .filter(({ count }) => count > 0)
+  .sort((a, b) => b.count - a.count);
+---
+
+<Base title="Publicações">
+  <h1>Publicações</h1>
+  <p class="page-intro">Os jornais e revistas onde os artigos foram publicados.</p>
+  <ul class="index-grid">
+    {
+      outlets.map(({ outlet, count }) => (
+        <li>
+          <a href={`/publicacoes/${outlet.id}/`}>
+            {outlet.data.name}
+            <span class="count">{count} {count === 1 ? 'artigo' : 'artigos'}</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Base>

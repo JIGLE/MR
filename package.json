@@ -1,0 +1,27 @@
+{
+  "name": "marlene-rendeiro-arquivo",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Arquivo dos artigos de Marlene Rendeiro",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && pagefind --site dist",
+    "preview": "astro preview",
+    "check": "astro check",
+    "new": "node scripts/new-article.mjs",
+    "import": "node scripts/import-url.mjs"
+  },
+  "dependencies": {
+    "astro": "5.18.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.12",
+    "@mozilla/readability": "0.6.0",
+    "@types/node": "^22.20.5",
+    "jsdom": "26.1.0",
+    "pagefind": "1.5.2",
+    "turndown": "7.2.4",
+    "typescript": "^5.9.3"
+  }
+}

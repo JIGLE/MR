@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { getArticles, slugify, type Article } from '../../lib/articles';
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  const tags = new Map<string, string>(); // slug -> display name
+  for (const article of articles) for (const tag of article.data.tags) tags.set(slugify(tag), tag);
+  return [...tags].map(([slug, name]) => ({
+    params: { tag: slug },
+    props: { name, articles: articles.filter((a) => a.data.tags.some((t) => slugify(t) === slug)) },
+  }));
+}
+
+const { name, articles } = Astro.props as { name: string; articles: Article[] };
+---
+
+<Base title={name}>
+  <span class="kicker">Tema</span>
+  <h1>{name}</h1>
+  <p class="page-intro">{articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}.</p>
+  <ArticleList articles={articles} />
+</Base>

@@ -1,0 +1,2 @@
+# No password: use when the site becomes a public portfolio,
+# or when another proxy in front (Authelia, Cloudflare Access, …) already handles login.

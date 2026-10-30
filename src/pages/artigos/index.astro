@@ -1,0 +1,13 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { getArticles } from '../../lib/articles';
+
+const articles = await getArticles();
+---
+
+<Base title="Todos os artigos">
+  <h1>Todos os artigos</h1>
+  <p class="page-intro">{articles.length} artigos, do mais recente para o mais antigo.</p>
+  <ArticleList articles={articles} groupByYear />
+</Base>

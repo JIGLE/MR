@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Pesquisa">
+  <link slot="head" rel="stylesheet" href="/pagefind/pagefind-ui.css" />
+  <h1>Pesquisa</h1>
+  <p class="page-intro">Procure em todos os artigos. A pesquisa entende plurais e variações das palavras em português.</p>
+  <div id="search"></div>
+  <noscript><p>A pesquisa precisa de JavaScript.</p></noscript>
+  <script is:inline src="/pagefind/pagefind-ui.js"></script>
+  <script is:inline>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof PagefindUI === 'undefined') {
+        document.getElementById('search').innerHTML =
+          '<p class="meta">O índice de pesquisa só existe depois de <code>npm run build</code>.</p>';
+        return;
+      }
+      const params = new URLSearchParams(location.search);
+      const ui = new PagefindUI({
+        element: '#search',
+        showSubResults: true,
+        showImages: true,
+        resetStyles: false,
+        translations: { placeholder: 'Pesquisar artigos', zero_results: 'Nenhum resultado para [SEARCH_TERM]' },
+      });
+      if (params.get('q')) ui.triggerSearch(params.get('q'));
+    });
+  </script>
+</Base>
