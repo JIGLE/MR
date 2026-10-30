@@ -1,0 +1,14 @@
+# TrueNAS SCALE 24.10+ → Apps → Discover Apps → ⋮ → Install via YAML. Paste this file.
+# Change the password before installing. To update after adding articles: Apps → arquivo → Update
+# (or stop/start the app with "pull_policy: always" as below).
+services:
+  arquivo:
+    image: ghcr.io/jigle/mr:latest
+    pull_policy: always
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      ARCHIVE_AUTH: basic
+      ARCHIVE_USER: marlene
+      ARCHIVE_PASSWORD: change-me

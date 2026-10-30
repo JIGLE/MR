@@ -71,6 +71,22 @@ After adding articles, `git pull && docker compose up -d --build` rebuilds the s
 | `SITE_URL` | `http://localhost:8080` | The address the site will be reached at. |
 | `PORT` | `8080` | Port on the host. |
 
+### TrueNAS SCALE
+
+TrueNAS can't build the image itself, so GitHub builds it: the workflow in
+`.github/workflows/image.yml` publishes `ghcr.io/jigle/mr:latest` on every push to `main`.
+
+1. Because the repository is private, the image is too. Create a GitHub
+   [personal access token (classic)](https://github.com/settings/tokens) with only `read:packages`.
+2. In TrueNAS: **Apps → Configuration → Manage Container Image Registries → Add**, registry
+   `ghcr.io`, your GitHub username, and the token as password.
+3. **Apps → Discover Apps → ⋮ → Install via YAML**, paste `deploy/truenas.yaml`, set the password, save.
+
+To publish new articles, push to `main`, wait for the GitHub action to finish, then stop and start
+the app in TrueNAS (it pulls the latest image on start). On TrueNAS 24.04 (Dragonfish) use
+**Custom App** instead, with image `ghcr.io/jigle/mr`, tag `latest`, container port 8080, and the three
+`ARCHIVE_*` environment variables.
+
 ### Private now, portfolio later
 
 While `ARCHIVE_PUBLIC=false` every page is marked `noindex` and `robots.txt` blocks crawlers,
