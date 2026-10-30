@@ -1,4 +1,4 @@
-@need_auth not path /_astro/* /favicon.svg /favicon.ico
+@need_auth not path /_astro/*.css /_astro/*.js /favicon.svg /favicon.ico
 basic_auth @need_auth {
 	{$ARCHIVE_USER} {$ARCHIVE_PASSWORD_HASH}
 }
