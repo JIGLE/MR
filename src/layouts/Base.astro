@@ -5,18 +5,18 @@ import '../styles/global.css';
 interface Props {
   title?: string;
   description?: string;
-  /** The home page lets the masthead grow into its opening (the `opening` slot). */
-  home?: boolean;
+  /** The home page draws the menu bar over its cover photo instead of on black. */
+  overCover?: boolean;
 }
 
-const { title, home = false, description = `${siteTitle}: ${siteTagline.toLowerCase()}` } = Astro.props;
+const { title, overCover = false, description = `${siteTitle}: ${siteTagline.toLowerCase()}` } = Astro.props;
 const pageTitle = title ? `${title} · ${siteTitle}` : `${siteTitle} · ${siteTagline}`;
 const path = Astro.url.pathname;
 const nav = [
   { href: '/artigos/', label: 'Artigos' },
   { href: '/publicacoes/', label: 'Publicações' },
   { href: '/anos/', label: 'Anos' },
-  { href: '/temas/', label: 'Temas' },
+  { href: '/indice/', label: 'Índice' },
   { href: '/pesquisa/', label: 'Pesquisa' },
 ];
 ---
@@ -30,15 +30,15 @@ const nav = [
     <meta name="description" content={description} />
     {!isPublic && <meta name="robots" content="noindex, nofollow, noarchive" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/source-serif-4-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/libre-caslon-display-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/libre-franklin-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <slot name="head" />
   </head>
   <body>
     <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
-    <header class={home ? 'masthead is-home' : 'masthead'}>
-      <div class="wrap masthead-inner">
-        <a class="brand" href="/">{home ? siteTagline : siteTitle}</a>
+    <header class={overCover ? 'bar over' : 'bar'}>
+      <div class="wrap bar-inner">
+        <a class="nameplate" href="/">{siteTitle}</a>
         <nav aria-label="Principal">
           <ul>
             {
@@ -53,13 +53,19 @@ const nav = [
           </ul>
         </nav>
       </div>
-      {home && <div class="wrap opening"><slot name="opening" /></div>}
     </header>
-    <main id="conteudo" class="wrap">
+    <main id="conteudo">
       <slot />
     </main>
     <footer class="site-footer">
       <div class="wrap">
+        <nav aria-label="Rodapé">
+          <ul>
+            <li><a href="/">Início</a></li>
+            {nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+            <li><a href="/mapa/">Mapa do site</a></li>
+          </ul>
+        </nav>
         <p>
           Textos de Marlene Rendeiro, publicados originalmente nos meios indicados em cada artigo.
           {!isPublic && <span> Arquivo privado.</span>}

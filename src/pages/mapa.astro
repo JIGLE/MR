@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import { getArticles, getOutlets, yearOf } from '../lib/articles';
+import { indexTerms } from '../lib/index-terms';
+
+const articles = await getArticles();
+const example = articles[0];
+const outlet = (await getOutlets()).find((o) => articles.some((a) => a.data.outlet.id === o.id));
+const term = indexTerms(articles)[0];
+const year = articles.length ? Math.max(...articles.map(yearOf)) : undefined;
+
+const sections = [
+  {
+    href: '/artigos/', label: 'Artigos', about: 'Todos os artigos, por ano, do mais recente para o mais antigo.',
+    child: example && { href: `/artigos/${example.id}/`, label: 'Um artigo', about: 'Fotografia, texto, imagens e a fonte original.' },
+  },
+  {
+    href: '/publicacoes/', label: 'Publicações', about: 'Uma capa por jornal ou revista.',
+    child: outlet && { href: `/publicacoes/${outlet.id}/`, label: outlet.data.name, about: 'Os artigos dessa publicação.' },
+  },
+  {
+    href: '/anos/', label: 'Anos', about: 'O calendário do ano mais recente, com separadores para os outros.',
+    child: year && { href: `/anos/${year}/`, label: String(year), about: 'O calendário de um ano.' },
+  },
+  {
+    href: '/indice/', label: 'Índice', about: 'Temas e lugares de A a Z.',
+    child: term && { href: `/indice/${term.slug}/`, label: term.name, about: 'Os artigos com esse tema ou lugar.' },
+  },
+  { href: '/pesquisa/', label: 'Pesquisa', about: 'Texto completo, com filtros por publicação, ano e tema.' },
+];
+---
+
+<Base title="Mapa do site">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Mapa do site</h1>
+      <p class="page-intro">Todas as páginas do arquivo. O menu de cima tem cinco secções, e o nome no canto leva sempre à capa.</p>
+    </header>
+    <a class="map-home" href="/"><strong>Início</strong> <span>A capa: fotografia do artigo mais recente e as três últimas chamadas.</span></a>
+    <ul class="map">
+      {
+        sections.map((s) => (
+          <li>
+            <a class="map-page" href={s.href}><span class="tag">{s.label}</span><span>{s.about}</span><code>{s.href}</code></a>
+            {s.child && (
+              <a class="map-page child" href={s.child.href}><strong>{s.child.label}</strong><span>{s.child.about}</span><code>{s.child.href}</code></a>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</Base>

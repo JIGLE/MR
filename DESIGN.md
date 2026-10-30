@@ -6,29 +6,47 @@ Keep changes consistent with this file, and update it when the system changes.
 
 ## Direction
 
-**The clippings register.** The site is set like a newspaper library's index of cuttings, not a blog of cards:
-one ruled line per article, the date in the margin, the year as a large running numeral. The editor's blue
-pencil owns the frame; the reading column stays calm.
+**The magazine cover.** The home page is a cover: the newest article's photograph full-bleed, her name huge in a
+display serif, and the latest articles as cover lines under yellow section tags. Inside, the pages borrow from
+print reference: a wall calendar for the years, an A–Z index with thumb tabs, one "magazine cover" per outlet.
 
-- **Modes.** The home page and lists are a register to scan; article pages are for reading. Expression lives in
-  the masthead and headings, never in the reading column.
-- **Refused defaults.** No cream paper with serif display and a red accent, no cards or pills, no eyebrow labels
-  above headings, no big-number stat blocks, no coloured side stripes.
+- **Modes.** The home page, Publicações, Anos and Índice are for browsing and can be loud. Article pages are for
+  reading: one calm serif column, expression only in the cover photo and title.
+- **Refused defaults.** No cards with shadows, no eyebrow labels above headings, no big-number stat blocks, no
+  coloured side stripes, no cream paper with a red accent.
+
+## Architecture
+
+The menu (on every page) has five sections; her name in the corner always goes to the cover. The footer repeats
+the sections and links to the site map.
+
+| Page | URL | Children |
+|---|---|---|
+| Início (cover) | `/` | |
+| Artigos, by year | `/artigos/` | each article at `/artigos/<year>/<slug>/` |
+| Publicações | `/publicacoes/` | `/publicacoes/<outlet>/` |
+| Anos, a wall calendar | `/anos/` (latest year) | `/anos/<year>/` |
+| Índice, topics and places A–Z | `/indice/` | `/indice/<term>/` (`/temas/` redirects here) |
+| Pesquisa (Pagefind) | `/pesquisa/` | |
+| Mapa do site | `/mapa/` | |
+
+Index terms are each article's `section` plus its `tags`. Yellow section tags link to the term's page; year
+headings and article dates link to the year's calendar.
 
 ## Colour
 
-Restrained: tinted neutrals plus one committed blue that owns the masthead (and the whole first viewport on the
-home page).
+Tinted neutrals, black bars, and one committed yellow for tags and highlights. Each outlet also has its own
+colour, used only on its Publicações cover and code (`src/lib/outlet-style.ts`).
 
 | Token | Light | Dark | Use |
 |---|---|---|---|
-| `--ground` | `#f2f3ef` cool newsprint | `#111319` | page |
-| `--ink` | `#15171d` | `#e5e6ea` | text, heavy rules |
-| `--ink-2` | `#4f5463` | `#a2a7b5` | secondary text, dates |
-| `--rule` | `#cdd0d6` | `#2c303b` | hairlines |
-| `--blue` | `#1f3bb3` | `#1b2c86` | masthead band, links (light) |
-| `--blue-soft` | `#c9d1f2` | `#9eb0ff` | selection, search highlight, links (dark) |
-| `--blue-wash` | `#e3e7f6` | `#1a2140` | notices |
+| `--ground` | `#ecebe5` | `#121211` | page |
+| `--row` | `#f7f6f1` | `#1c1c1a` | list rows, panels |
+| `--ink` | `#121212` | `#ecebe5` | text, heavy rules |
+| `--ink-2` | `#5b5953` | `#a8a69e` | secondary text, dates |
+| `--rule` | `#c4c1b8` | `#3a3936` | hairlines |
+| `--yellow` | `#ffe03a` | same | section tags, calendar days, current menu item |
+| `--bar` | `#121212` | `#000000` | menu bar |
 
 Both themes follow the reader's system setting.
 
@@ -36,15 +54,16 @@ Both themes follow the reader's system setting.
 
 Self-hosted from `public/fonts` (SIL Open Font License, texts alongside).
 
-- **Archivo** (variable width and weight): masthead, headings, metadata, navigation. Expanded (125%) and heavy
-  for the name and year numerals; 112% for page and article titles.
-- **Source Serif 4** (variable, optical sizes): body text, standfirsts, and article titles in lists.
-- Body 18px, measure about 65 characters (`--measure: 38rem`). Dates and counts use tabular numerals.
+- **Libre Caslon Display**: her name, page titles, article titles, cover lines.
+- **Libre Franklin** (variable): menu, metadata, interface text.
+- **Big Shoulders Display** (variable, condensed): yellow section tags, outlet codes, calendar labels.
+- **Source Serif 4** (variable, optical sizes): article body. Body 18px, measure about 65 characters
+  (`--measure: 38rem`). Dates and counts use tabular numerals.
 
 ## Signature details
 
-- Year headings are big Archivo numerals over a 2px ink rule; the list continues as hairline rows.
-- Quotations hang a blue Portuguese guillemet («) in the margin.
-- The first line of an article is set in small capitals.
+- On the cover the menu bar is transparent and the nameplate is hidden, because the cover carries the name.
+- The cover credits its photograph ("Fotografia:") with a link to that article.
+- Articles open with a drop cap; quotations hang a Portuguese guillemet («) in the margin.
 - "Fonte e originais" is a colophon under a double rule, not a boxed card.
-- Selection, focus rings, caret and scrollbar are themed from the palette.
+- Selection, focus rings and scrollbar are themed from the palette.

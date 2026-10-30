@@ -1,0 +1,67 @@
+---
+import { formatDate, yearOf, type Article } from '../lib/articles';
+
+interface Props {
+  year: number;
+  /** All articles; the ones from `year` are drawn on the calendar. */
+  articles: Article[];
+}
+
+const { year, articles } = Astro.props;
+const years = articles.map(yearOf);
+const allYears = years.length ? Array.from({ length: Math.max(...years) - Math.min(...years) + 1 }, (_, i) => Math.min(...years) + i) : [year];
+const inYear = articles.filter((a) => yearOf(a) === year).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const monthName = new Intl.DateTimeFormat('pt-PT', { month: 'long', timeZone: 'UTC' });
+const weekdays = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
+
+const months = Array.from({ length: 12 }, (_, m) => {
+  const items = inYear.filter((a) => a.data.date.getUTCMonth() === m);
+  const marked = new Set(items.map((a) => a.data.date.getUTCDate()));
+  const first = new Date(Date.UTC(year, m, 1));
+  const blanks = (first.getUTCDay() + 6) % 7; // weeks start on Monday
+  const length = new Date(Date.UTC(year, m + 1, 0)).getUTCDate();
+  const days = [...Array(blanks).fill(0), ...Array.from({ length }, (_, d) => d + 1)];
+  const name = monthName.format(first);
+  return { name: name.charAt(0).toUpperCase() + name.slice(1), items, marked, days, id: `m${m + 1}` };
+});
+---
+
+<nav class="year-tabs" aria-label="Anos">
+  <ul>
+    {
+      allYears.map((y) =>
+        years.includes(y) ? (
+          <li><a href={`/anos/${y}/`} aria-current={y === year ? 'page' : undefined}>{y}</a></li>
+        ) : (
+          <li><span title="Sem artigos neste ano">{y}</span></li>
+        ),
+      )
+    }
+  </ul>
+</nav>
+
+<div class="months">
+  {
+    months.map((month) => (
+      <section class="month" id={month.id} aria-labelledby={`${month.id}-t`}>
+        <h2 id={`${month.id}-t`}>{month.name} {month.items.length > 0 && <small>{month.items.length}</small>}</h2>
+        <div class="days" aria-hidden="true">
+          {weekdays.map((d) => <span class="wd">{d}</span>)}
+          {month.days.map((d) => <span class={month.marked.has(d) ? 'on' : undefined}>{d || ''}</span>)}
+        </div>
+        <ul>
+          {month.items.length ? (
+            month.items.map((a) => (
+              <li>
+                <time datetime={a.data.date.toISOString().slice(0, 10)} title={formatDate(a.data.date)}>{a.data.date.getUTCDate()}</time>
+                <a href={`/artigos/${a.id}/`}>{a.data.title}</a>
+              </li>
+            ))
+          ) : (
+            <li class="none">Sem artigos</li>
+          )}
+        </ul>
+      </section>
+    ))
+  }
+</div>

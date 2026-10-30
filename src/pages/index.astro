@@ -1,31 +1,42 @@
 ---
+import { getImage } from 'astro:assets';
 import Base from '../layouts/Base.astro';
-import ArticleList from '../components/ArticleList.astro';
-import { getArticles, getOutlets, yearOf } from '../lib/articles';
+import { formatDate, getArticles, getOutlets, outletOf, slugify } from '../lib/articles';
 import { siteTitle } from '../lib/config';
 
 const articles = await getArticles();
-const outlets = await getOutlets();
-const usedOutlets = outlets.filter((o) => articles.some((a) => a.data.outlet.id === o.id));
-const years = articles.map(yearOf);
-const first = years.length ? Math.min(...years) : null;
-const last = years.length ? Math.max(...years) : null;
-const outletNames = new Intl.ListFormat('pt-PT', { type: 'conjunction' }).format(usedOutlets.map((o) => o.data.name));
+// The cover photo is the newest article that has one; the cover lines are the three newest articles.
+const coverArticle = articles.find((a) => a.data.cover);
+const coverImage = coverArticle?.data.cover && (await getImage({ src: coverArticle.data.cover, width: 2000 }));
+const lines = await Promise.all(articles.slice(0, 3).map(async (article) => ({ article, outlet: await outletOf(article) })));
+const outlets = (await getOutlets()).filter((o) => o.id !== 'outros').map((o) => o.data.name);
+const outletList = new Intl.ListFormat('pt-PT', { type: 'conjunction' }).format(outlets);
 ---
 
-<Base home>
-  <Fragment slot="opening">
-    <h1>{siteTitle}</h1>
-    <p>
-      Reportagens, entrevistas e crónicas publicadas em {outletNames || 'vários meios'}, reunidas num só lugar
-      com as imagens e os originais.
-      {articles.length > 0 && (
-        <><strong>{articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}</strong>{first === last ? <> de <strong>{first}</strong>.</> : <>, de <strong>{first}</strong> a <strong>{last}</strong>.</>}</>
-      )}
-    </p>
-  </Fragment>
-
-  <h2>Mais recentes</h2>
-  <ArticleList articles={articles.slice(0, 10)} />
-  {articles.length > 10 && <p class="more"><a href="/artigos/">Ver todos os {articles.length} artigos</a></p>}
+<Base overCover>
+  <section class="cover" style={coverImage ? `--cover: url('${coverImage.src}')` : undefined}>
+    <div class="wrap cover-inner">
+      <h1>{siteTitle.split(' ').map((word, i) => (i ? <><br />{word}</> : word))}</h1>
+      <div>
+        {
+          lines.length > 0 && (
+            <ul class="cover-lines">
+              {lines.map(({ article, outlet }) => (
+                <li>
+                  {article.data.section && <a class="tag" href={`/indice/${slugify(article.data.section)}/`}>{article.data.section}</a>}
+                  <a class="line" href={`/artigos/${article.id}/`}>{article.data.title}</a>
+                  <p>{outlet.data.name} · <time datetime={article.data.date.toISOString().slice(0, 10)}>{formatDate(article.data.date)}</time></p>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+        <div class="cover-foot">
+          <p>Reportagens, entrevistas e crónicas para {outletList}.</p>
+          {articles.length > 0 ? <a href="/artigos/">Ver os {articles.length} artigos</a> : <span>Ainda não há artigos no arquivo.</span>}
+        </div>
+        {coverArticle && <p class="cover-credit">Fotografia: <a href={`/artigos/${coverArticle.id}/`}>{coverArticle.data.title}</a></p>}
+      </div>
+    </div>
+  </section>
 </Base>

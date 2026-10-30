@@ -5,6 +5,8 @@ export default defineConfig({
   site: process.env.SITE_URL || 'http://localhost:8080',
   trailingSlash: 'always',
   build: { format: 'directory' },
+  // "Temas" became "Índice" (topics and places together).
+  redirects: { '/temas': '/indice' },
   image: {
     // Keep generated images reasonably sharp; originals are always kept untouched.
     responsiveStyles: true,

@@ -1,19 +1,25 @@
 ---
 import Base from '../../layouts/Base.astro';
-import ArticleList from '../../components/ArticleList.astro';
-import { getArticles, groupBy, yearOf, type Article } from '../../lib/articles';
+import YearCalendar from '../../components/YearCalendar.astro';
+import { getArticles, yearOf } from '../../lib/articles';
 
 export async function getStaticPaths() {
-  const byYear = groupBy(await getArticles(), yearOf);
-  return [...byYear].map(([year, articles]) => ({ params: { year: String(year) }, props: { articles } }));
+  const years = new Set((await getArticles()).map(yearOf));
+  return [...years].map((year) => ({ params: { year: String(year) } }));
 }
 
-const { year } = Astro.params;
-const { articles } = Astro.props as { articles: Article[] };
+const year = Number(Astro.params.year);
+const articles = await getArticles();
+const count = articles.filter((a) => yearOf(a) === year).length;
 ---
 
-<Base title={year}>
-  <h1>{year}</h1>
-  <p class="page-intro">{articles.length} {articles.length === 1 ? 'artigo publicado' : 'artigos publicados'} neste ano. <a href="/anos/">Todos os anos</a></p>
-  <ArticleList articles={articles} />
+<Base title={String(year)}>
+  <div class="wrap page">
+    <p class="crumb"><a href="/anos/">Anos</a> › {year}</p>
+    <header class="page-head">
+      <h1>{year}</h1>
+      <p class="page-intro">{count} {count === 1 ? 'artigo publicado' : 'artigos publicados'} neste ano. Os dias marcados a amarelo têm um artigo.</p>
+    </header>
+    <YearCalendar year={year} articles={articles} />
+  </div>
 </Base>
