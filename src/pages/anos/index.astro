@@ -1,23 +1,20 @@
 ---
+// "Anos" opens on the most recent year's calendar; the tabs lead to the others.
 import Base from '../../layouts/Base.astro';
-import { getArticles, groupBy, yearOf } from '../../lib/articles';
+import YearCalendar from '../../components/YearCalendar.astro';
+import { getArticles, yearOf } from '../../lib/articles';
 
-const byYear = groupBy(await getArticles(), yearOf);
+const articles = await getArticles();
+const year = articles.length ? Math.max(...articles.map(yearOf)) : new Date().getUTCFullYear();
+const count = articles.filter((a) => yearOf(a) === year).length;
 ---
 
 <Base title="Anos">
-  <h1>Anos</h1>
-  <p class="page-intro">Os artigos organizados pelo ano de publicação.</p>
-  <ul class="index-list">
-    {
-      [...byYear].map(([year, items]) => (
-        <li>
-          <a href={`/anos/${year}/`}>
-            <span class="name">{year}</span>
-            <span class="count">{items.length} {items.length === 1 ? 'artigo' : 'artigos'}</span>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>{year}</h1>
+      <p class="page-intro">O ano como um calendário de parede: os dias marcados a amarelo têm um artigo. {count} {count === 1 ? 'artigo' : 'artigos'} neste ano.</p>
+    </header>
+    <YearCalendar year={year} articles={articles} />
+  </div>
 </Base>

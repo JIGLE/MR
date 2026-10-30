@@ -1,12 +1,11 @@
 ---
-import { formatDate, outletOf, yearOf, groupBy, type Article } from '../lib/articles';
-import { outletCode } from '../lib/outlet-code';
+import { formatDate, outletOf, slugify, yearOf, groupBy, type Article } from '../lib/articles';
 
 interface Props {
   articles: Article[];
   /** Insert a year heading whenever the year changes. */
   groupByYear?: boolean;
-  /** Hide the outlet tag, e.g. on an outlet's own page. */
+  /** Hide the outlet name, e.g. on an outlet's own page. */
   hideOutlet?: boolean;
 }
 
@@ -22,24 +21,21 @@ const short = (date: Date) =>
 {
   [...groups].map(([year, items]) => (
     <section>
-      {year && <h2 class="year-heading">{year}</h2>}
-      <ul class={hideOutlet ? 'article-list no-outlet' : 'article-list'}>
+      {year && <h2 class="year-heading"><a href={`/anos/${year}/`}>{year}</a></h2>}
+      <ul class="article-list">
         {items.map(({ article, outlet }) => (
           <li>
             <time class="when" datetime={article.data.date.toISOString().slice(0, 10)} title={formatDate(article.data.date)}>
               {short(article.data.date)}
             </time>
-            {!hideOutlet && <span class="code" title={outlet.data.name}>{outletCode(outlet)}</span>}
             <div class="entry">
+              {article.data.section && <a class="tag" href={`/indice/${slugify(article.data.section)}/`}>{article.data.section}</a>}
               <h3>
                 <a href={`/artigos/${article.id}/`}>{article.data.title}</a>
               </h3>
               {article.data.subtitle && <p class="standfirst">{article.data.subtitle}</p>}
             </div>
-            <p class="meta">
-              {!hideOutlet && <span class="visually-hidden">{outlet.data.name}</span>}
-              {article.data.section}
-            </p>
+            {!hideOutlet && <a class="source" href={`/publicacoes/${outlet.id}/`}>{outlet.data.name}</a>}
           </li>
         ))}
       </ul>

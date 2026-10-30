@@ -1,0 +1,41 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getArticles } from '../../lib/articles';
+import { indexTerms, letterOf } from '../../lib/index-terms';
+import { groupBy } from '../../lib/articles';
+
+const terms = indexTerms(await getArticles());
+const byLetter = groupBy(terms, (t) => letterOf(t.name));
+const alphabet = 'ABCDEFGHIJLMNOPQRSTUVXZ'.split('');
+---
+
+<Base title="Índice">
+  <nav class="thumb-tabs" aria-label="Letras">
+    {alphabet.map((l) => (byLetter.has(l) ? <a href={`#letra-${l}`}>{l}</a> : <span aria-hidden="true">{l}</span>))}
+  </nav>
+  <div class="wrap page with-tabs">
+    <header class="page-head">
+      <h1>Índice</h1>
+      <p class="page-intro">Temas e lugares de A a Z, como o índice de um guia. Cada entrada leva aos artigos.</p>
+    </header>
+    {terms.length === 0 && <p class="page-intro">Ainda não há temas: aparecem quando os artigos tiverem secção ou etiquetas.</p>}
+    <div class="index-cols">
+      {
+        [...byLetter].map(([letter, items]) => (
+          <section class="letter" id={`letra-${letter}`}>
+            <h2>{letter}</h2>
+            {items.map((term) => (
+              <div class="term">
+                <h3><a href={`/indice/${term.slug}/`}>{term.name}</a> <small>{term.articles.length}</small></h3>
+                <ul>
+                  {term.articles.slice(0, 3).map((a) => <li><a href={`/artigos/${a.id}/`}>{a.data.title}</a></li>)}
+                </ul>
+                {term.articles.length > 3 && <a class="more-link" href={`/indice/${term.slug}/`}>Mais {term.articles.length - 3}</a>}
+              </div>
+            ))}
+          </section>
+        ))
+      }
+    </div>
+  </div>
+</Base>

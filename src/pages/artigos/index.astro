@@ -6,8 +6,12 @@ import { getArticles } from '../../lib/articles';
 const articles = await getArticles();
 ---
 
-<Base title="Todos os artigos">
-  <h1>Todos os artigos</h1>
-  <p class="page-intro">{articles.length} artigos, do mais recente para o mais antigo.</p>
-  <ArticleList articles={articles} groupByYear />
+<Base title="Artigos">
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Artigos</h1>
+      <p class="page-intro">{articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}, do mais recente para o mais antigo. Cada um com as imagens e o original.</p>
+    </header>
+    <ArticleList articles={articles} groupByYear />
+  </div>
 </Base>

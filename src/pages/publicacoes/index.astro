@@ -1,27 +1,44 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { getArticles, getOutlets } from '../../lib/articles';
+import { outletColor } from '../../lib/outlet-style';
 
 const articles = await getArticles();
 const outlets = (await getOutlets())
-  .map((outlet) => ({ outlet, count: articles.filter((a) => a.data.outlet.id === outlet.id).length }))
-  .filter(({ count }) => count > 0)
-  .sort((a, b) => b.count - a.count);
+  .map((outlet) => ({ outlet, items: articles.filter((a) => a.data.outlet.id === outlet.id) }))
+  .filter(({ outlet, items }) => items.length > 0 || outlet.id !== 'outros')
+  .sort((a, b) => b.items.length - a.items.length);
 ---
 
 <Base title="Publicações">
-  <h1>Publicações</h1>
-  <p class="page-intro">Os jornais e revistas onde os artigos foram publicados.</p>
-  <ul class="index-list">
-    {
-      outlets.map(({ outlet, count }) => (
-        <li>
-          <a href={`/publicacoes/${outlet.id}/`}>
-            <span class="name">{outlet.data.name}</span>
-            <span class="count">{count} {count === 1 ? 'artigo' : 'artigos'}</span>
-          </a>
-        </li>
-      ))
-    }
-  </ul>
+  <div class="wrap page">
+    <header class="page-head">
+      <h1>Publicações</h1>
+      <p class="page-intro">Os jornais e revistas onde os artigos foram publicados. Cada capa mostra os títulos mais recentes.</p>
+    </header>
+    <ul class="covers">
+      {
+        outlets.map(({ outlet, items }) =>
+          items.length > 0 ? (
+            <li>
+              <a class="outlet-cover" href={`/publicacoes/${outlet.id}/`} style={`--c: ${outletColor(outlet)}`}>
+                <h2>{outlet.data.name}</h2>
+                <span class="tag">{items.length} {items.length === 1 ? 'artigo' : 'artigos'}</span>
+                <ul>
+                  {items.slice(0, 3).map((a) => <li>{a.data.title}</li>)}
+                </ul>
+              </a>
+            </li>
+          ) : (
+            <li>
+              <div class="outlet-cover empty">
+                <h2>{outlet.data.name}</h2>
+                <p>Ainda sem artigos no arquivo.</p>
+              </div>
+            </li>
+          ),
+        )
+      }
+    </ul>
+  </div>
 </Base>

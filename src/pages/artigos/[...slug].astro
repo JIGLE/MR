@@ -4,7 +4,7 @@ import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { formatDate, getArticles, outletOf, resolveAttachments, slugify, yearOf, type Article } from '../../lib/articles';
 import { isPublic } from '../../lib/config';
-import { outletCode } from '../../lib/outlet-code';
+import { outletCode } from '../../lib/outlet-style';
 
 export async function getStaticPaths() {
   const articles = await getArticles();
@@ -26,30 +26,30 @@ const mediumLabel = { web: 'Online', print: 'Impresso', both: 'Impresso e online
 
 <Base title={data.title} description={data.subtitle}>
   <article data-pagefind-body>
-    {data.sample && <p class="notice" data-pagefind-ignore>Artigo de exemplo para demonstrar o arquivo. Apague-o quando importar os verdadeiros.</p>}
-
-    <header class="article-header">
-      <h1>{data.title}</h1>
-      {data.subtitle && <p class="subtitle">{data.subtitle}</p>}
-      <p class="meta">
+    <header class={data.cover ? 'story-cover' : 'story-cover no-photo'}>
+      {
+        data.cover && (
+          <Image class="story-photo" src={data.cover} alt={data.coverAlt ?? ''} widths={[800, 1400, 2000]} sizes="100vw" loading="eager" data-pagefind-meta="image[src]" />
+        )
+      }
+      <div class="wrap story-title">
+        {data.section && <a class="tag" href={`/indice/${slugify(data.section)}/`} data-pagefind-ignore>{data.section}</a>}
+        <h1>{data.title}</h1>
+        {data.subtitle && <p class="subtitle">{data.subtitle}</p>}
+      </div>
+    </header>
+    {data.cover && data.coverCaption && <p class="wrap cover-caption">{data.coverCaption}</p>}
+    <div class="wrap">
+      <p class="story-meta">
         <span class="code" aria-hidden="true" data-pagefind-ignore>{outletCode(outlet)}</span>
         <a class="outlet" href={`/publicacoes/${outlet.id}/`} data-pagefind-filter="Publicação">{outlet.data.name}</a>
-        {' · '}
-        <time datetime={data.date.toISOString().slice(0, 10)}>{formatDate(data.date)}</time>
+        <a class="date" href={`/anos/${yearOf(article)}/`}><time datetime={data.date.toISOString().slice(0, 10)}>{formatDate(data.date)}</time></a>
         <span hidden data-pagefind-filter="Ano">{yearOf(article)}</span>
-        {data.section && <> · {data.section}</>}
-        {data.coauthors.length > 0 && <> · com {data.coauthors.join(', ')}</>}
+        {data.coauthors.length > 0 && <span>com {data.coauthors.join(', ')}</span>}
       </p>
-    </header>
+    </div>
 
-    {
-      data.cover && (
-        <figure class="cover">
-          <Image src={data.cover} alt={data.coverAlt ?? ''} widths={[640, 1040, 1600]} sizes="(max-width: 52rem) 100vw, 52rem" data-pagefind-meta="image[src]" />
-          {data.coverCaption && <figcaption>{data.coverCaption}</figcaption>}
-        </figure>
-      )
-    }
+    {data.sample && <p class="notice" data-pagefind-ignore>Artigo de exemplo para demonstrar o arquivo. Apague-o quando importar os verdadeiros.</p>}
 
     <div class="prose">
       <Content />
@@ -72,9 +72,9 @@ const mediumLabel = { web: 'Online', print: 'Impresso', both: 'Impresso e online
 
     {
       data.tags.length > 0 && (
-        <ul class="tags prose" data-pagefind-ignore>
+        <ul class="tags" data-pagefind-ignore>
           {data.tags.map((tag) => (
-            <li><a href={`/temas/${slugify(tag)}/`} data-pagefind-filter="Tema">{tag}</a></li>
+            <li><a class="tag" href={`/indice/${slugify(tag)}/`} data-pagefind-filter="Tema">{tag}</a></li>
           ))}
         </ul>
       )

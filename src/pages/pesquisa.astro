@@ -4,10 +4,14 @@ import Base from '../layouts/Base.astro';
 
 <Base title="Pesquisa">
   <link slot="head" rel="stylesheet" href="/pagefind/pagefind-ui.css" />
-  <h1>Pesquisa</h1>
-  <p class="page-intro">Procure em todos os artigos. A pesquisa entende plurais e variações das palavras em português.</p>
-  <div id="search"></div>
-  <noscript><p>A pesquisa precisa de JavaScript.</p></noscript>
+  <section class="search-band">
+    <div class="wrap">
+      <h1>Pesquisa</h1>
+      <p>Procure em todos os artigos. A pesquisa entende plurais e variações das palavras em português.</p>
+      <div id="search"></div>
+      <noscript><p>A pesquisa precisa de JavaScript.</p></noscript>
+    </div>
+  </section>
   <script is:inline src="/pagefind/pagefind-ui.js"></script>
   <script is:inline>
     window.addEventListener('DOMContentLoaded', () => {

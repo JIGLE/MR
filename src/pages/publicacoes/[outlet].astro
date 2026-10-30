@@ -16,11 +16,16 @@ const { outlet, articles } = Astro.props as { outlet: Outlet; articles: Article[
 ---
 
 <Base title={outlet.data.name}>
-  <h1>{outlet.data.name}</h1>
-  <p class="page-intro">
-    {outlet.data.description}
-    {articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}.
-    {outlet.data.url && <a href={outlet.data.url} rel="noopener">Site da publicação</a>}
-  </p>
-  <ArticleList articles={articles} groupByYear hideOutlet />
+  <div class="wrap page">
+    <p class="crumb"><a href="/publicacoes/">Publicações</a> › {outlet.data.name}</p>
+    <header class="page-head">
+      <h1>{outlet.data.name}</h1>
+      <p class="page-intro">
+        {outlet.data.description}
+        {articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}.
+        {outlet.data.url && <a href={outlet.data.url} rel="noopener">Site da publicação</a>}
+      </p>
+    </header>
+    <ArticleList articles={articles} groupByYear hideOutlet />
+  </div>
 </Base>

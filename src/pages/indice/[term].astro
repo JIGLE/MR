@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { getArticles } from '../../lib/articles';
+import { indexTerms, type IndexTerm } from '../../lib/index-terms';
+
+export async function getStaticPaths() {
+  return indexTerms(await getArticles()).map((term) => ({ params: { term: term.slug }, props: { term } }));
+}
+
+const { term } = Astro.props as { term: IndexTerm };
+const count = term.articles.length;
+---
+
+<Base title={term.name}>
+  <div class="wrap page">
+    <p class="crumb"><a href="/indice/">Índice</a> › {term.name}</p>
+    <header class="page-head">
+      <h1>{term.name}</h1>
+      <p class="page-intro">{count} {count === 1 ? 'artigo' : 'artigos'} sobre este tema ou lugar.</p>
+    </header>
+    <ArticleList articles={term.articles} groupByYear />
+  </div>
+</Base>
