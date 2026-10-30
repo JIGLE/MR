@@ -12,7 +12,8 @@
     "new": "node scripts/new-article.mjs",
     "import": "node scripts/import-url.mjs",
     "discover": "node scripts/discover.mjs",
-    "import-list": "node scripts/import-list.mjs"
+    "import-list": "node scripts/import-list.mjs",
+    "recover-images": "node scripts/recover-images.mjs"
   },
   "dependencies": {
     "astro": "5.18.2"
