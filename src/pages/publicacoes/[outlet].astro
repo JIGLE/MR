@@ -16,7 +16,6 @@ const { outlet, articles } = Astro.props as { outlet: Outlet; articles: Article[
 ---
 
 <Base title={outlet.data.name}>
-  <span class="kicker">Publicação</span>
   <h1>{outlet.data.name}</h1>
   <p class="page-intro">
     {outlet.data.description}

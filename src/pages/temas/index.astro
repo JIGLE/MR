@@ -12,7 +12,7 @@ const tags = [...counts].sort(([a], [b]) => a.localeCompare(b, 'pt'));
 <Base title="Temas">
   <h1>Temas</h1>
   <p class="page-intro">Os assuntos tratados nos artigos.</p>
-  <ul class="tag-cloud">
-    {tags.map(([tag, count]) => <li><a href={`/temas/${slugify(tag)}/`}>{tag} <span class="meta">({count})</span></a></li>)}
+  <ul class="topic-list">
+    {tags.map(([tag, count]) => <li><a href={`/temas/${slugify(tag)}/`}>{tag}</a><span class="count">{count}</span></li>)}
   </ul>
 </Base>

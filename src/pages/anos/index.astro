@@ -8,12 +8,12 @@ const byYear = groupBy(await getArticles(), yearOf);
 <Base title="Anos">
   <h1>Anos</h1>
   <p class="page-intro">Os artigos organizados pelo ano de publicação.</p>
-  <ul class="index-grid">
+  <ul class="index-list">
     {
       [...byYear].map(([year, items]) => (
         <li>
           <a href={`/anos/${year}/`}>
-            {year}
+            <span class="name">{year}</span>
             <span class="count">{items.length} {items.length === 1 ? 'artigo' : 'artigos'}</span>
           </a>
         </li>

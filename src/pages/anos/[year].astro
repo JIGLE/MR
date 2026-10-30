@@ -13,8 +13,7 @@ const { articles } = Astro.props as { articles: Article[] };
 ---
 
 <Base title={year}>
-  <span class="kicker">Ano</span>
   <h1>{year}</h1>
-  <p class="page-intro">{articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}.</p>
+  <p class="page-intro">{articles.length} {articles.length === 1 ? 'artigo publicado' : 'artigos publicados'} neste ano. <a href="/anos/">Todos os anos</a></p>
   <ArticleList articles={articles} />
 </Base>
