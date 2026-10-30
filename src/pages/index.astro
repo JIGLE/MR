@@ -1,31 +1,62 @@
 ---
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import ArticleList from '../components/ArticleList.astro';
-import { getArticles, getOutlets, yearOf } from '../lib/articles';
-import { siteTitle } from '../lib/config';
+import { formatDate, getArticles, outletOf } from '../lib/articles';
+import { outletCode } from '../lib/outlet-code';
 
 const articles = await getArticles();
-const outlets = await getOutlets();
-const usedOutlets = outlets.filter((o) => articles.some((a) => a.data.outlet.id === o.id));
-const years = articles.map(yearOf);
-const first = years.length ? Math.min(...years) : null;
-const last = years.length ? Math.max(...years) : null;
-const outletNames = new Intl.ListFormat('pt-PT', { type: 'conjunction' }).format(usedOutlets.map((o) => o.data.name));
+// The front page leads with the newest article that has a picture, like a newspaper's lead story.
+const lead = articles.find((a) => a.data.cover) ?? articles[0];
+const rest = articles.filter((a) => a !== lead);
+const latest = rest.slice(0, 4);
+const register = rest.slice(4, 24);
+const leadOutlet = lead && (await outletOf(lead));
+const latestRows = await Promise.all(latest.map(async (article) => ({ article, outlet: await outletOf(article) })));
+const day = new Intl.DateTimeFormat('pt-PT', { month: 'short', timeZone: 'UTC' });
+const short = (d: Date) => `${d.getUTCDate()} ${day.format(d).replace('.', '')}`;
 ---
 
 <Base home>
-  <Fragment slot="opening">
-    <h1>{siteTitle}</h1>
-    <p>
-      Reportagens, entrevistas e crónicas publicadas em {outletNames || 'vários meios'}, reunidas num só lugar
-      com as imagens e os originais.
-      {articles.length > 0 && (
-        <><strong>{articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}</strong>{first === last ? <> de <strong>{first}</strong>.</> : <>, de <strong>{first}</strong> a <strong>{last}</strong>.</>}</>
-      )}
-    </p>
-  </Fragment>
+  {
+    lead ? (
+      <div class="front">
+        <article class="lead">
+          {lead.data.cover && (
+            <a href={`/artigos/${lead.id}/`} tabindex="-1" aria-hidden="true">
+              <Image src={lead.data.cover} alt="" widths={[640, 960, 1280]} sizes="(max-width: 52rem) 100vw, 50rem" />
+            </a>
+          )}
+          <h2><a href={`/artigos/${lead.id}/`}>{lead.data.title}</a></h2>
+          {lead.data.subtitle && <p class="standfirst">{lead.data.subtitle}</p>}
+          <p class="meta">
+            <span class="code" aria-hidden="true">{outletCode(leadOutlet!)}</span>
+            {leadOutlet!.data.name}
+            {lead.data.section && <> · {lead.data.section}</>} · <time datetime={lead.data.date.toISOString().slice(0, 10)}>{formatDate(lead.data.date)}</time>
+          </p>
+        </article>
+        {latest.length > 0 && (
+          <aside class="listing" aria-labelledby="recentes">
+            <h2 id="recentes">Mais recentes <small>{articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}</small></h2>
+            <ol>
+              {latestRows.map(({ article, outlet }) => (
+                <li>
+                  <time datetime={article.data.date.toISOString().slice(0, 10)} title={formatDate(article.data.date)}>{short(article.data.date)}</time>
+                  <div>
+                    <a href={`/artigos/${article.id}/`}>{article.data.title}</a>
+                    <span>{outlet.data.name}{article.data.section && <> · {article.data.section}</>}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </aside>
+        )}
+      </div>
+    ) : (
+      <p class="page-intro">Ainda não há artigos no arquivo.</p>
+    )
+  }
 
-  <h2>Mais recentes</h2>
-  <ArticleList articles={articles.slice(0, 10)} />
-  {articles.length > 10 && <p class="more"><a href="/artigos/">Ver todos os {articles.length} artigos</a></p>}
+  {register.length > 0 && <div class="register"><ArticleList articles={register} groupByYear /></div>}
+  {rest.length > 4 + register.length && <p class="more"><a href="/artigos/">Ver todos os {articles.length} artigos</a></p>}
 </Base>

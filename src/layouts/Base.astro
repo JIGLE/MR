@@ -1,17 +1,21 @@
 ---
 import { isPublic, siteTitle, siteTagline } from '../lib/config';
+import { getArticles, getOutlets } from '../lib/articles';
+import { outletCode } from '../lib/outlet-code';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
-  /** The home page lets the masthead grow into its opening (the `opening` slot). */
+  /** The home page gets the full-size nameplate. */
   home?: boolean;
 }
 
 const { title, home = false, description = `${siteTitle}: ${siteTagline.toLowerCase()}` } = Astro.props;
 const pageTitle = title ? `${title} · ${siteTitle}` : `${siteTitle} · ${siteTagline}`;
 const path = Astro.url.pathname;
+const articles = await getArticles();
+const outlets = (await getOutlets()).filter((o) => articles.some((a) => a.data.outlet.id === o.id));
 const nav = [
   { href: '/artigos/', label: 'Artigos' },
   { href: '/publicacoes/', label: 'Publicações' },
@@ -30,30 +34,40 @@ const nav = [
     <meta name="description" content={description} />
     {!isPublic && <meta name="robots" content="noindex, nofollow, noarchive" />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="preload" href="/fonts/archivo-latin-wdth-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/libre-caslon-display-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/libre-franklin-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/source-serif-4-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin />
     <slot name="head" />
   </head>
   <body>
     <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
     <header class={home ? 'masthead is-home' : 'masthead'}>
-      <div class="wrap masthead-inner">
-        <a class="brand" href="/">{home ? siteTagline : siteTitle}</a>
-        <nav aria-label="Principal">
-          <ul>
-            {
-              nav.map((item) => (
-                <li>
-                  <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
-                    {item.label}
-                  </a>
-                </li>
-              ))
-            }
+      <div class="wrap">
+        <div class="ear">
+          <span>{siteTagline}</span>
+          <span class="ear-outlets">{outlets.map((o) => o.data.name).join(' · ')}</span>
+          <ul class="codes" aria-label="Publicações">
+            {outlets.map((o) => <li><a class="code" href={`/publicacoes/${o.id}/`} title={o.data.name}>{outletCode(o)}</a></li>)}
           </ul>
-        </nav>
+        </div>
+        <div class="nameplate">
+          {home ? <h1>{siteTitle}</h1> : <a href="/">{siteTitle}</a>}
+          {home && <p>Reportagens, entrevistas e crónicas, com as imagens e os originais</p>}
+        </div>
       </div>
-      {home && <div class="wrap opening"><slot name="opening" /></div>}
+      <nav aria-label="Principal">
+        <ul>
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href} aria-current={path.startsWith(item.href) ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
     </header>
     <main id="conteudo" class="wrap">
       <slot />
