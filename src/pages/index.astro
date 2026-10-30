@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+import ArticleList from '../components/ArticleList.astro';
+import { getArticles, getOutlets, yearOf } from '../lib/articles';
+
+const articles = await getArticles();
+const outlets = await getOutlets();
+const usedOutlets = outlets.filter((o) => articles.some((a) => a.data.outlet.id === o.id));
+const years = articles.map(yearOf);
+const span = years.length ? `${Math.min(...years)}–${Math.max(...years)}` : '—';
+---
+
+<Base>
+  <section class="hero">
+    <h1>Artigos de Marlene Rendeiro</h1>
+    <p>
+      Reportagens, entrevistas e crónicas publicadas em {usedOutlets.map((o) => o.data.name).join(', ') || 'vários meios'},
+      reunidas num só lugar com as imagens e os originais.
+    </p>
+    <ul class="stats">
+      <li><strong>{articles.length}</strong> artigos</li>
+      <li><strong>{usedOutlets.length}</strong> publicações</li>
+      <li><strong>{span}</strong> anos</li>
+    </ul>
+  </section>
+
+  <h2>Mais recentes</h2>
+  <ArticleList articles={articles.slice(0, 10)} />
+  {articles.length > 10 && <p><a href="/artigos/">Ver todos os artigos →</a></p>}
+</Base>

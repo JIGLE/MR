@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { getArticles, getOutlets, type Article, type Outlet } from '../../lib/articles';
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  const outlets = await getOutlets();
+  return outlets
+    .map((outlet) => ({ outlet, articles: articles.filter((a) => a.data.outlet.id === outlet.id) }))
+    .filter(({ articles }) => articles.length > 0)
+    .map(({ outlet, articles }) => ({ params: { outlet: outlet.id }, props: { outlet, articles } }));
+}
+
+const { outlet, articles } = Astro.props as { outlet: Outlet; articles: Article[] };
+---
+
+<Base title={outlet.data.name}>
+  <span class="kicker">Publicação</span>
+  <h1>{outlet.data.name}</h1>
+  <p class="page-intro">
+    {outlet.data.description}
+    {articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}.
+    {outlet.data.url && <a href={outlet.data.url} rel="noopener">Site da publicação</a>}
+  </p>
+  <ArticleList articles={articles} groupByYear hideOutlet />
+</Base>

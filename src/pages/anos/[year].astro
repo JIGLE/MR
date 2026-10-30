@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleList from '../../components/ArticleList.astro';
+import { getArticles, groupBy, yearOf, type Article } from '../../lib/articles';
+
+export async function getStaticPaths() {
+  const byYear = groupBy(await getArticles(), yearOf);
+  return [...byYear].map(([year, articles]) => ({ params: { year: String(year) }, props: { articles } }));
+}
+
+const { year } = Astro.params;
+const { articles } = Astro.props as { articles: Article[] };
+---
+
+<Base title={year}>
+  <span class="kicker">Ano</span>
+  <h1>{year}</h1>
+  <p class="page-intro">{articles.length} {articles.length === 1 ? 'artigo' : 'artigos'}.</p>
+  <ArticleList articles={articles} />
+</Base>

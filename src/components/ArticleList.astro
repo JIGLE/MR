@@ -1,0 +1,46 @@
+---
+import { Image } from 'astro:assets';
+import { formatDate, outletOf, yearOf, groupBy, type Article } from '../lib/articles';
+
+interface Props {
+  articles: Article[];
+  /** Insert a year heading whenever the year changes. */
+  groupByYear?: boolean;
+  /** Hide the outlet name, e.g. on an outlet's own page. */
+  hideOutlet?: boolean;
+}
+
+const { articles, groupByYear = false, hideOutlet = false } = Astro.props;
+const rows = await Promise.all(articles.map(async (article) => ({ article, outlet: await outletOf(article) })));
+const groups = groupByYear ? groupBy(rows, (r) => yearOf(r.article)) : new Map([[null, rows]]);
+---
+
+{
+  [...groups].map(([year, items]) => (
+    <section>
+      {year && <h2 class="year-heading">{year}</h2>}
+      <ul class="article-list">
+        {items.map(({ article, outlet }) => (
+          <li class={article.data.cover ? 'has-cover' : undefined}>
+            <div>
+              {!hideOutlet && <span class="kicker">{outlet.data.name}</span>}
+              <h3>
+                <a href={`/artigos/${article.id}/`}>{article.data.title}</a>
+              </h3>
+              {article.data.subtitle && <p>{article.data.subtitle}</p>}
+              <p class="meta">
+                <time datetime={article.data.date.toISOString().slice(0, 10)}>{formatDate(article.data.date)}</time>
+                {article.data.section && <> · {article.data.section}</>}
+              </p>
+            </div>
+            {article.data.cover && (
+              <Image class="thumb" src={article.data.cover} alt="" width={288} height={216} fit="cover" />
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  ))
+}
+
+{articles.length === 0 && <p class="page-intro">Ainda não há artigos aqui.</p>}

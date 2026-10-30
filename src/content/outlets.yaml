@@ -1,0 +1,15 @@
+# Publications Marlene wrote for. The key (id) is what articles use in `outlet:`.
+- id: noticias-tv
+  name: Notícias TV
+  description: Revista de televisão do grupo Global Media.
+- id: diario-de-noticias
+  name: Diário de Notícias
+  url: https://www.dn.pt
+- id: evasoes
+  name: Evasões
+  url: https://www.evasoes.pt
+- id: volta-ao-mundo
+  name: Volta ao Mundo
+  url: https://www.voltaaomundo.pt
+- id: outros
+  name: Outras publicações

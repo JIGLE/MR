@@ -1,0 +1,107 @@
+---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { formatDate, getArticles, outletOf, resolveAttachments, slugify, yearOf, type Article } from '../../lib/articles';
+import { isPublic } from '../../lib/config';
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  return articles.map((article) => ({ params: { slug: article.id }, props: { article } }));
+}
+
+const { article } = Astro.props as { article: Article };
+const { data } = article;
+const outlet = await outletOf(article);
+const attachments = resolveAttachments(article);
+const { Content } = await render(article);
+const inline = attachments.filter((a) => ['video', 'audio', 'scan'].includes(a.kind));
+const kindLabel: Record<string, string> = {
+  pdf: 'PDF', snapshot: 'Página original', scan: 'Digitalização', image: 'Imagem',
+  video: 'Vídeo', audio: 'Áudio', other: 'Ficheiro',
+};
+const mediumLabel = { web: 'Online', print: 'Impresso', both: 'Impresso e online' }[data.medium];
+---
+
+<Base title={data.title} description={data.subtitle}>
+  <article data-pagefind-body>
+    {data.sample && <p class="notice" data-pagefind-ignore>Artigo de exemplo para demonstrar o arquivo. Apague-o quando importar os verdadeiros.</p>}
+
+    <header class="article-header">
+      <a class="kicker" href={`/publicacoes/${outlet.id}/`} data-pagefind-ignore data-pagefind-filter="Publicação">{outlet.data.name}</a>
+      <h1>{data.title}</h1>
+      {data.subtitle && <p class="subtitle">{data.subtitle}</p>}
+      <p class="meta">
+        <time datetime={data.date.toISOString().slice(0, 10)}>{formatDate(data.date)}</time>
+        <span hidden data-pagefind-filter="Ano">{yearOf(article)}</span>
+        {data.section && <> · {data.section}</>}
+        {data.coauthors.length > 0 && <> · com {data.coauthors.join(', ')}</>}
+      </p>
+    </header>
+
+    {
+      data.cover && (
+        <figure class="cover">
+          <Image src={data.cover} alt={data.coverAlt ?? ''} widths={[640, 1040, 1600]} sizes="(max-width: 52rem) 100vw, 52rem" data-pagefind-meta="image[src]" />
+          {data.coverCaption && <figcaption>{data.coverCaption}</figcaption>}
+        </figure>
+      )
+    }
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    {
+      inline.length > 0 && (
+        <div class="media" data-pagefind-ignore>
+          {inline.map((a) => (
+            <figure>
+              {a.kind === 'video' && <video src={a.url} controls preload="metadata" />}
+              {a.kind === 'audio' && <audio src={a.url} controls preload="metadata" />}
+              {a.kind === 'scan' && <a href={a.url}><img src={a.url} alt={a.label} loading="lazy" /></a>}
+              <figcaption>{a.label}</figcaption>
+            </figure>
+          ))}
+        </div>
+      )
+    }
+
+    {
+      data.tags.length > 0 && (
+        <ul class="tags prose" data-pagefind-ignore>
+          {data.tags.map((tag) => (
+            <li><a href={`/temas/${slugify(tag)}/`} data-pagefind-filter="Tema">{tag}</a></li>
+          ))}
+        </ul>
+      )
+    }
+  </article>
+
+  <aside class="sources" data-pagefind-ignore>
+    <h2>Fonte e originais</h2>
+    <dl>
+      <dt>Publicação</dt>
+      <dd>{outlet.data.name}{data.printEdition && <>, {data.printEdition}</>}</dd>
+      <dt>Data</dt>
+      <dd>{formatDate(data.date)}</dd>
+      <dt>Formato</dt>
+      <dd>{mediumLabel}</dd>
+      {data.originalUrl && (<><dt>Endereço original</dt><dd><a href={data.originalUrl} rel="noopener">{data.originalUrl}</a></dd></>)}
+      {data.archiveUrl && (<><dt>Cópia arquivada</dt><dd><a href={data.archiveUrl} rel="noopener">{data.archiveUrl}</a></dd></>)}
+      {!isPublic && data.notes && (<><dt>Notas</dt><dd>{data.notes}</dd></>)}
+    </dl>
+    {
+      attachments.length > 0 && (
+        <ul class="attachments">
+          {attachments.map((a) => (
+            <li>
+              <span class="kind">{kindLabel[a.kind]}</span>
+              <a href={a.url} download={a.kind === 'snapshot' ? undefined : a.file.split('/').pop()}>{a.label}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </aside>
+</Base>

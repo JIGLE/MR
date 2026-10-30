@@ -1,0 +1,3 @@
+basic_auth {
+	{$ARCHIVE_USER} {$ARCHIVE_PASSWORD_HASH}
+}
