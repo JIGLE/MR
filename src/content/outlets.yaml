@@ -11,5 +11,9 @@
 - id: volta-ao-mundo
   name: Volta ao Mundo
   url: https://www.voltaaomundo.pt
+- id: delas
+  name: Delas
+  url: https://www.delas.pt
+  description: Revista feminina do grupo Global Media.
 - id: outros
   name: Outras publicações

@@ -141,3 +141,20 @@ A few places worth searching, roughly in order of yield:
 - The **Wayback Machine** for the same author pages.
 - Marlene's own clippings, PDFs sent by editors, and the publications' archive departments for
   print-only pieces.
+
+## Finding articles in bulk → `npm run discover` and `npm run import-list`
+
+`research/inventory.csv` lists every article found so far (title, outlet, date, address, archive
+capture, where it was found, status). `npm run discover` adds new leads to it from Arquivo.pt's
+full-text search, the Wayback Machine's copies of her author pages, and the author pages on the
+outlets' current sites. It never removes or changes rows that are already there.
+
+1. `npm run discover` (or `-- --only arquivo` for one source).
+2. Open the CSV in a spreadsheet. For each `por-verificar` row, check that it is hers and set
+   `status` to `importar` (or `não` if it isn't). Prefer an Arquivo.pt capture in `archive_url`
+   when the live page has lost its photos.
+3. `npm run import-list` imports every `importar` row and marks it `importado` or `erro`.
+   `-- --dry-run` shows what would run.
+4. Review each import as described above.
+
+Arquivo.pt and the publications' sites must be reachable from the machine running these commands.

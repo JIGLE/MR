@@ -28,9 +28,10 @@ const USER_AGENT = 'Mozilla/5.0 (arquivo pessoal; +https://github.com/JIGLE/MR)'
 
 /** Recognises Arquivo.pt and Wayback URLs and returns the raw-capture URL plus the original address. */
 function archiveInfo(url) {
-  const m = url.match(/^(https?:\/\/(?:arquivo\.pt\/wayback|web\.archive\.org\/web))\/(\d{8,14})(?:[a-z_]{2,3}_)?\/(.+)$/);
+  const m = url.match(/^(https?:\/\/(?:arquivo\.pt\/(?:wayback|noFrame\/replay)|web\.archive\.org\/web))\/(\d{8,14})(?:[a-z_]{2,3}_)?\/(.+)$/);
   if (!m) return null;
-  const [, base, timestamp, original] = m;
+  let [, base, timestamp, original] = m;
+  base = base.replace('/noFrame/replay', '/wayback');
   // The `id_` flag asks the archive for the page exactly as captured, without its toolbar.
   return { raw: `${base}/${timestamp}id_/${original}`, original, timestamp, archiveUrl: `${base}/${timestamp}/${original}`, base };
 }
