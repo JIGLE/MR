@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { formatDate, getArticles, outletOf, resolveAttachments, slugify, yearOf, type Article } from '../../lib/articles';
-import { isPublic } from '../../lib/config';
+import { isPublic, siteTitle } from '../../lib/config';
 import { outletCode } from '../../lib/outlet-style';
 
 export async function getStaticPaths() {
@@ -46,7 +46,7 @@ const mediumLabel = { web: 'Online', print: 'Impresso', both: 'Impresso e online
         <a class="outlet" href={`/publicacoes/${outlet.id}/`} data-pagefind-filter="Publicação">{outlet.data.name}</a>
         <a class="date" href={`/anos/${yearOf(article)}/`}><time datetime={data.date.toISOString().slice(0, 10)}>{formatDate(data.date)}</time></a>
         <span hidden data-pagefind-filter="Ano">{yearOf(article)}</span>
-        {data.coauthors.length > 0 && <span>com {data.coauthors.join(', ')}</span>}
+        <span class="byline">{siteTitle}{data.coauthors.length > 0 && ` com ${data.coauthors.join(', ')}`}</span>
       </p>
     </div>
 
@@ -55,6 +55,8 @@ const mediumLabel = { web: 'Online', print: 'Impresso', both: 'Impresso e online
     <div class="prose">
       <Content />
     </div>
+
+    <p class="prose-end" aria-hidden="true" data-pagefind-ignore>&#x2022; &#x2022; &#x2022;</p>
 
     {
       inline.length > 0 && (
@@ -108,4 +110,22 @@ const mediumLabel = { web: 'Online', print: 'Impresso', both: 'Impresso e online
       )
     }
   </aside>
+
+  <script>
+    function handleBrokenImages() {
+      document.querySelectorAll<HTMLImageElement>('.prose img').forEach((img) => {
+        const mark = () => { img.setAttribute('data-broken', ''); };
+        if (img.complete && img.naturalWidth === 0) mark();
+        else img.addEventListener('error', mark, { once: true });
+      });
+
+      const cover = document.querySelector<HTMLImageElement>('.story-photo');
+      if (cover) {
+        const mark = () => cover.closest('.story-cover')?.classList.add('cover-broken');
+        if (cover.complete && cover.naturalWidth === 0) mark();
+        else cover.addEventListener('error', mark, { once: true });
+      }
+    }
+    handleBrokenImages();
+  </script>
 </Base>
