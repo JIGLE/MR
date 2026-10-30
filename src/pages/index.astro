@@ -1,20 +1,19 @@
 ---
-import { getImage } from 'astro:assets';
+import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import { formatDate, getArticles, getOutlets, outletOf, slugify } from '../lib/articles';
 import { siteTitle } from '../lib/config';
+import homeCover from '../assets/homepage-cover.jpg';
 
 const articles = await getArticles();
-// The cover photo is the newest article that has one; the cover lines are the three newest articles.
-const coverArticle = articles.find((a) => a.data.cover);
-const coverImage = coverArticle?.data.cover && (await getImage({ src: coverArticle.data.cover, width: 3840, quality: 80 }));
 const lines = await Promise.all(articles.slice(0, 3).map(async (article) => ({ article, outlet: await outletOf(article) })));
 const outlets = (await getOutlets()).filter((o) => o.id !== 'outros').map((o) => o.data.name);
 const outletList = new Intl.ListFormat('pt-PT', { type: 'conjunction' }).format(outlets);
 ---
 
 <Base overCover>
-  <section class="cover" style={coverImage ? `--cover: url('${coverImage.src}')` : undefined}>
+  <section class="cover">
+    <Image class="cover-photo" src={homeCover} alt="" widths={[800, 1200]} sizes="100vw" loading="eager" />
     <div class="wrap cover-inner">
       <h1>{siteTitle.split(' ').map((word, i) => (i ? <><br />{word}</> : word))}</h1>
       <div>
@@ -35,7 +34,7 @@ const outletList = new Intl.ListFormat('pt-PT', { type: 'conjunction' }).format(
           <p>Reportagens, entrevistas e crónicas para {outletList}.</p>
           {articles.length > 0 ? <a href="/artigos/">Ver os {articles.length} artigos</a> : <span>Ainda não há artigos no arquivo.</span>}
         </div>
-        {coverArticle && <p class="cover-credit">Fotografia: <a href={`/artigos/${coverArticle.id}/`}>{coverArticle.data.title}</a></p>}
+        <p class="cover-credit">Fotografia: <a href="/artigos/2015/brasil-rio-de-janeiro-e-angra-dos-reis-volta-ao-mundo/">Brasil: Rio de Janeiro e Angra dos Reis</a></p>
       </div>
     </div>
   </section>
