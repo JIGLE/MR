@@ -40,6 +40,7 @@ const mediumLabel = { web: 'Online', print: 'Impresso', both: 'Impresso e online
     </header>
     {data.cover && data.coverCaption && <p class="wrap cover-caption">{data.coverCaption}</p>}
     <div class="wrap">
+      <p class="crumb"><a href="/artigos/">Artigos</a> › <a href={`/anos/${yearOf(article)}/`}>{yearOf(article)}</a> › {data.title}</p>
       <p class="story-meta">
         <span class="code" aria-hidden="true" data-pagefind-ignore>{outletCode(outlet)}</span>
         <a class="outlet" href={`/publicacoes/${outlet.id}/`} data-pagefind-filter="Publicação">{outlet.data.name}</a>

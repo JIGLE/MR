@@ -1,4 +1,5 @@
 ---
+import { Image } from 'astro:assets';
 import { formatDate, outletOf, slugify, yearOf, groupBy, type Article } from '../lib/articles';
 
 interface Props {
@@ -25,6 +26,9 @@ const short = (date: Date) =>
       <ul class="article-list">
         {items.map(({ article, outlet }) => (
           <li>
+            <div class="thumb">
+              {article.data.cover && <Image src={article.data.cover} alt="" width={56} height={56} loading="lazy" />}
+            </div>
             <time class="when" datetime={article.data.date.toISOString().slice(0, 10)} title={formatDate(article.data.date)}>
               {short(article.data.date)}
             </time>

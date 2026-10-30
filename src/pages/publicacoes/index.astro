@@ -6,7 +6,7 @@ import { outletColor } from '../../lib/outlet-style';
 const articles = await getArticles();
 const outlets = (await getOutlets())
   .map((outlet) => ({ outlet, items: articles.filter((a) => a.data.outlet.id === outlet.id) }))
-  .filter(({ outlet, items }) => items.length > 0 || outlet.id !== 'outros')
+  .filter(({ items }) => items.length > 0)
   .sort((a, b) => b.items.length - a.items.length);
 ---
 
@@ -19,24 +19,15 @@ const outlets = (await getOutlets())
     <ul class="covers">
       {
         outlets.map(({ outlet, items }) =>
-          items.length > 0 ? (
-            <li>
-              <a class="outlet-cover" href={`/publicacoes/${outlet.id}/`} style={`--c: ${outletColor(outlet)}`}>
-                <h2>{outlet.data.name}</h2>
-                <span class="tag">{items.length} {items.length === 1 ? 'artigo' : 'artigos'}</span>
-                <ul>
-                  {items.slice(0, 3).map((a) => <li>{a.data.title}</li>)}
-                </ul>
-              </a>
-            </li>
-          ) : (
-            <li>
-              <div class="outlet-cover empty">
-                <h2>{outlet.data.name}</h2>
-                <p>Ainda sem artigos no arquivo.</p>
-              </div>
-            </li>
-          ),
+          <li>
+            <a class="outlet-cover" href={`/publicacoes/${outlet.id}/`} style={`--c: ${outletColor(outlet)}`}>
+              <h2>{outlet.data.name}</h2>
+              <span class="tag">{items.length} {items.length === 1 ? 'artigo' : 'artigos'}</span>
+              <ul>
+                {items.slice(0, 3).map((a) => <li>{a.data.title}</li>)}
+              </ul>
+            </a>
+          </li>,
         )
       }
     </ul>
