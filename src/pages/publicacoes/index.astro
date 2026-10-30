@@ -12,12 +12,12 @@ const outlets = (await getOutlets())
 <Base title="Publicações">
   <h1>Publicações</h1>
   <p class="page-intro">Os jornais e revistas onde os artigos foram publicados.</p>
-  <ul class="index-grid">
+  <ul class="index-list">
     {
       outlets.map(({ outlet, count }) => (
         <li>
           <a href={`/publicacoes/${outlet.id}/`}>
-            {outlet.data.name}
+            <span class="name">{outlet.data.name}</span>
             <span class="count">{count} {count === 1 ? 'artigo' : 'artigos'}</span>
           </a>
         </li>

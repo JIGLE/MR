@@ -12,6 +12,9 @@ interface Props {
 
 const { articles, groupByYear = false, hideOutlet = false } = Astro.props;
 const rows = await Promise.all(articles.map(async (article) => ({ article, outlet: await outletOf(article) })));
+// "12 mai." inside a year group, "12 mai. 2018" elsewhere.
+const month = new Intl.DateTimeFormat('pt-PT', { month: 'short', timeZone: 'UTC' });
+const short = (date: Date) => [date.getUTCDate(), month.format(date), groupByYear ? '' : date.getUTCFullYear()].join(' ').trim();
 const groups = groupByYear ? groupBy(rows, (r) => yearOf(r.article)) : new Map([[null, rows]]);
 ---
 
@@ -22,19 +25,24 @@ const groups = groupByYear ? groupBy(rows, (r) => yearOf(r.article)) : new Map([
       <ul class="article-list">
         {items.map(({ article, outlet }) => (
           <li class={article.data.cover ? 'has-cover' : undefined}>
-            <div>
-              {!hideOutlet && <span class="kicker">{outlet.data.name}</span>}
+            <time class="when" datetime={article.data.date.toISOString().slice(0, 10)} title={formatDate(article.data.date)}>
+              {short(article.data.date)}
+            </time>
+            <div class="entry">
               <h3>
                 <a href={`/artigos/${article.id}/`}>{article.data.title}</a>
               </h3>
-              {article.data.subtitle && <p>{article.data.subtitle}</p>}
-              <p class="meta">
-                <time datetime={article.data.date.toISOString().slice(0, 10)}>{formatDate(article.data.date)}</time>
-                {article.data.section && <> · {article.data.section}</>}
-              </p>
+              {article.data.subtitle && <p class="standfirst">{article.data.subtitle}</p>}
+              {(!hideOutlet || article.data.section) && (
+                <p class="meta">
+                  {!hideOutlet && <span class="outlet">{outlet.data.name}</span>}
+                  {!hideOutlet && article.data.section && ' · '}
+                  {article.data.section}
+                </p>
+              )}
             </div>
             {article.data.cover && (
-              <Image class="thumb" src={article.data.cover} alt="" width={288} height={216} fit="cover" />
+              <Image class="thumb" src={article.data.cover} alt="" width={340} height={255} fit="cover" />
             )}
           </li>
         ))}

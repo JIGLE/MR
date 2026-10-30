@@ -28,10 +28,11 @@ const mediumLabel = { web: 'Online', print: 'Impresso', both: 'Impresso e online
     {data.sample && <p class="notice" data-pagefind-ignore>Artigo de exemplo para demonstrar o arquivo. Apague-o quando importar os verdadeiros.</p>}
 
     <header class="article-header">
-      <a class="kicker" href={`/publicacoes/${outlet.id}/`} data-pagefind-ignore data-pagefind-filter="Publicação">{outlet.data.name}</a>
       <h1>{data.title}</h1>
       {data.subtitle && <p class="subtitle">{data.subtitle}</p>}
       <p class="meta">
+        <a class="outlet" href={`/publicacoes/${outlet.id}/`} data-pagefind-filter="Publicação">{outlet.data.name}</a>
+        {' · '}
         <time datetime={data.date.toISOString().slice(0, 10)}>{formatDate(data.date)}</time>
         <span hidden data-pagefind-filter="Ano">{yearOf(article)}</span>
         {data.section && <> · {data.section}</>}
