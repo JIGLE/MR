@@ -178,33 +178,86 @@ section > .article-list:first-child { border-top: 4px solid var(--ink); }
 .story-title .subtitle { font-family: var(--serif); font-size: clamp(1.1rem, 2vw, 1.3rem); line-height: 1.45; margin: 0; max-width: 42rem; opacity: 0.92; }
 .story-cover :focus-visible { outline-color: var(--yellow); }
 .cover-caption { margin-top: 0.5rem; font-size: 0.8rem; color: var(--ink-2); }
+
+/* Byline and metadata: editorial strip below the cover. */
 .story-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1.2rem; padding: 0.9rem 0; margin: 0; border-bottom: 1px solid var(--ink); font-size: 0.92rem; }
 .story-meta .outlet { font-weight: 700; }
 .story-meta .date { font-family: var(--condensed); font-weight: 800; font-size: 1.3rem; text-decoration: none; }
+.story-meta .byline { font-family: var(--serif); font-style: italic; color: var(--ink-2); }
 .story-meta a:hover { text-decoration: underline; }
+
+/* Prose: the reading column. */
 .prose { max-width: var(--measure); margin: 3rem auto 0; padding: 0 var(--gutter); box-sizing: content-box; font-family: var(--serif); font-size: 1.15rem; line-height: 1.65; text-wrap: pretty; hyphens: auto; }
+.prose > p:first-of-type { font-size: 1.25rem; line-height: 1.55; }
 .prose > p:first-of-type::first-letter { font-family: var(--caslon); float: left; font-size: 4.4rem; line-height: 0.8; margin: 0.35rem 0.5rem 0 0; }
+.prose p { margin: 0 0 1.2rem; }
 .prose a { text-decoration-color: var(--ink-2); }
 .prose a:hover { background: var(--yellow); color: var(--on-yellow); }
 .prose h2 { font-family: var(--caslon); font-weight: 400; font-size: 1.8rem; line-height: 1.15; margin: 2.4rem 0 0.6rem; }
-.prose img { display: block; margin: 2.2rem auto 0.6rem; }
-.prose blockquote { position: relative; margin: 2rem 0; padding-left: 2rem; font-family: var(--caslon); font-size: 1.7rem; line-height: 1.25; }
-.prose blockquote::before { content: '«'; position: absolute; left: 0; top: 0.05em; background: var(--yellow); color: var(--on-yellow); font-family: var(--condensed); font-weight: 900; font-size: 1.6rem; line-height: 1.1; padding: 0 0.15rem; }
+.prose h3 { font-family: var(--sans); font-weight: 700; font-size: 1.05rem; text-transform: uppercase; letter-spacing: 0.04em; margin: 2rem 0 0.5rem; }
+.prose h4 { font-family: var(--sans); font-weight: 700; font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-2); margin: 1.5rem 0 0.4rem; }
+
+/* Inline images: break out of the reading column for a magazine feel. */
+.prose img {
+  display: block; margin: 2.2rem calc(var(--gutter) * -1) 0.6rem;
+  width: calc(100% + var(--gutter) * 2); max-width: calc(100% + var(--gutter) * 2);
+}
+@media (min-width: 52rem) {
+  .prose img {
+    margin-left: -4rem; margin-right: -4rem;
+    width: calc(100% + 8rem); max-width: calc(100% + 8rem);
+  }
+}
+.prose img + em, .prose p:has(> img) + p > em:first-child {
+  display: block; font-family: var(--sans); font-style: normal; font-size: 0.85rem;
+  line-height: 1.45; color: var(--ink-2); margin-top: -0.2rem; margin-bottom: 1.8rem;
+}
+
+/* Pull quotes: the signature guillemet, now wider and more dramatic. */
+.prose blockquote {
+  position: relative; margin: 2.5rem 0; padding: 0 0 0 2rem;
+  font-family: var(--caslon); font-size: 1.7rem; line-height: 1.25; color: var(--ink);
+  border-left: none;
+}
+.prose blockquote::before {
+  content: '\AB'; position: absolute; left: 0; top: 0.05em;
+  background: var(--yellow); color: var(--on-yellow);
+  font-family: var(--condensed); font-weight: 900; font-size: 1.6rem; line-height: 1.1; padding: 0 0.15rem;
+}
+.prose blockquote p { font-size: inherit; line-height: inherit; margin-bottom: 0.6rem; }
+.prose blockquote p:last-child { margin-bottom: 0; }
+@media (min-width: 52rem) {
+  .prose blockquote {
+    margin-left: -4rem; margin-right: -4rem; padding-left: 2.5rem;
+  }
+}
 .prose iframe, .prose video { width: 100%; aspect-ratio: 16 / 9; border: 0; }
 .prose hr { border: 0; border-top: 1px solid var(--rule); margin: 2.5rem 0; }
+
+/* Section end ornament: three dots in the yellow. */
+.prose-end { max-width: var(--measure); margin: 2.5rem auto 0; padding: 0 var(--gutter); box-sizing: content-box; text-align: center; letter-spacing: 0.5em; color: var(--ink-2); font-size: 1.2rem; }
+
 figcaption { font-family: var(--sans); font-size: 0.85rem; line-height: 1.45; color: var(--ink-2); margin-top: 0.5rem; }
 .notice { max-width: var(--measure); margin: 2rem auto 0; padding: 0.7rem 1rem; background: var(--yellow); color: var(--on-yellow); font-size: 0.9rem; }
 .media { max-width: var(--measure); margin: 2.5rem auto 0; padding: 0 var(--gutter); box-sizing: content-box; }
 .media figure { margin: 0 0 1.75rem; }
 .tags { list-style: none; max-width: var(--measure); margin: 2.5rem auto 0; padding: 0 var(--gutter); box-sizing: content-box; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.sources { max-width: var(--measure); margin: 3.5rem auto 0; padding: 1rem var(--gutter) 0; box-sizing: content-box; border-top: 4px double var(--ink); font-size: 0.9rem; }
-.sources h2 { font-family: var(--condensed); font-weight: 900; font-size: 1.4rem; text-transform: uppercase; margin: 0 0 0.8rem; }
+.tags li .tag { font-size: 0.9rem; }
+.sources { max-width: var(--measure); margin: 3.5rem auto 0; padding: 1.5rem var(--gutter) 0; box-sizing: content-box; border-top: 4px double var(--ink); font-size: 0.9rem; }
+.sources h2 { font-family: var(--condensed); font-weight: 900; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 0.03em; margin: 0 0 0.8rem; }
 .sources dl { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 0.35rem 1.5rem; margin: 0; }
-.sources dt { color: var(--ink-2); }
+.sources dt { color: var(--ink-2); font-family: var(--sans); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
 .sources dd { margin: 0; overflow-wrap: anywhere; }
 .attachments { list-style: none; padding: 0; margin: 1.25rem 0 0; }
 .attachments li { display: flex; gap: 1rem; padding: 0.5rem 0; border-top: 1px solid var(--rule); }
 .attachments .kind { flex: 0 0 7rem; color: var(--ink-2); }
+
+/* Broken / missing images: hide gracefully instead of showing browser icons. */
+.prose img[data-broken] { display: none; }
+.prose img[data-broken] + em { display: none; }
+.story-cover.cover-broken .story-photo { display: none; }
+.story-cover.cover-broken::before { display: none; }
+.story-cover.cover-broken { min-height: 0; padding-top: 3rem; }
 
 /* Publicações: one magazine cover per outlet. */
 .covers { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); gap: 1.5rem; }
