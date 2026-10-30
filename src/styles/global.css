@@ -133,7 +133,7 @@ main:has(> .cover) + .site-footer { margin-top: 0; }
 .cover-foot a { color: var(--yellow); font-weight: 800; }
 .cover-credit { margin: 0.8rem 0 0; font-size: 0.75rem; opacity: 0.75; }
 .cover :focus-visible { outline-color: var(--yellow); }
-@media (max-width: 46rem) { .cover-lines { grid-template-columns: 1fr; } }
+@media (max-width: 46rem) { .cover-lines { grid-template-columns: repeat(2, 1fr); } }
 
 /* Inner pages */
 .page { padding-top: 0.5rem; }
@@ -152,7 +152,9 @@ h1, h2, h3 { text-wrap: balance; }
 section:first-child > .year-heading { margin-top: 0.5rem; }
 .article-list { list-style: none; margin: 0; padding: 0; }
 section > .article-list:first-child { border-top: 4px solid var(--ink); }
-.article-list > li { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr) 9rem; gap: 0.3rem 1.5rem; align-items: baseline; padding: 1rem 0; border-bottom: 1px solid var(--rule); }
+.article-list > li { display: grid; grid-template-columns: 3.5rem 6.5rem minmax(0, 1fr) 9rem; gap: 0.3rem 1.5rem; align-items: baseline; padding: 1rem 0; border-bottom: 1px solid var(--rule); }
+.article-list .thumb { width: 3.5rem; height: 3.5rem; align-self: start; overflow: hidden; }
+.article-list .thumb img { width: 100%; height: 100%; object-fit: cover; }
 .article-list .when { font-family: var(--condensed); font-weight: 800; font-size: 1.6rem; line-height: 1; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .article-list h3 { font-family: var(--caslon); font-weight: 400; font-size: clamp(1.35rem, 2.2vw, 1.75rem); line-height: 1.12; margin: 0.35rem 0 0; }
 .article-list h3 a { text-decoration: none; }
@@ -161,8 +163,9 @@ section > .article-list:first-child { border-top: 4px solid var(--ink); }
 .article-list .source { font-size: 0.85rem; color: var(--ink-2); text-align: right; text-decoration: none; }
 .article-list .source:hover { color: var(--ink); text-decoration: underline; }
 @media (max-width: 44rem) {
-  .article-list > li { grid-template-columns: auto minmax(0, 1fr); }
-  .article-list .entry { grid-column: 1 / -1; grid-row: 2; }
+  .article-list > li { grid-template-columns: 3.5rem auto minmax(0, 1fr); }
+  .article-list .thumb { grid-row: 1 / 3; }
+  .article-list .entry { grid-column: 2 / -1; grid-row: 2; }
 }
 
 /* Article page: a small cover, then a calm reading column. */
@@ -243,6 +246,10 @@ a.outlet-cover:hover h2 { text-decoration: underline; text-decoration-thickness:
 .thumb-tabs a { background: var(--yellow); color: var(--on-yellow); }
 .thumb-tabs a:hover { background: #fff; }
 body:has(.thumb-tabs) { padding-right: 2.6rem; }
+.index-filter { margin-bottom: 1.5rem; }
+.index-filter input { width: 100%; max-width: 28rem; font-family: var(--sans); font-size: 1rem; padding: 0.6rem 0.8rem; background: var(--row); color: var(--ink); border: 2px solid var(--rule); }
+.index-filter input:focus { border-color: var(--ink); outline: none; }
+.index-filter input::placeholder { color: var(--ink-2); }
 .index-cols { columns: 2 24rem; column-gap: 3rem; }
 .letter { break-inside: avoid; margin-bottom: 1.8rem; scroll-margin-top: 1rem; }
 .letter h2 { font-family: var(--condensed); font-weight: 900; font-size: 3.2rem; line-height: 1; margin: 0; border-bottom: 4px solid var(--ink); }

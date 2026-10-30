@@ -19,6 +19,11 @@ const alphabet = 'ABCDEFGHIJLMNOPQRSTUVXZ'.split('');
       <p class="page-intro">Temas e lugares de A a Z, como o índice de um guia. Cada entrada leva aos artigos.</p>
     </header>
     {terms.length === 0 && <p class="page-intro">Ainda não há temas: aparecem quando os artigos tiverem secção ou etiquetas.</p>}
+    {terms.length > 0 && (
+      <div class="index-filter">
+        <input type="search" id="index-search" placeholder="Filtrar temas…" autocomplete="off" />
+      </div>
+    )}
     <div class="index-cols">
       {
         [...byLetter].map(([letter, items]) => (
@@ -38,4 +43,31 @@ const alphabet = 'ABCDEFGHIJLMNOPQRSTUVXZ'.split('');
       }
     </div>
   </div>
+<script>
+  const input = document.getElementById('index-search') as HTMLInputElement;
+  if (input) {
+    const letters = document.querySelectorAll<HTMLElement>('.letter');
+    const tabs = document.querySelectorAll<HTMLElement>('.thumb-tabs a, .thumb-tabs span');
+    input.addEventListener('input', () => {
+      const q = input.value.toLowerCase().trim();
+      const visible = new Set<string>();
+      letters.forEach((section) => {
+        const terms = section.querySelectorAll<HTMLElement>('.term');
+        let any = false;
+        terms.forEach((t) => {
+          const name = t.querySelector('h3 a')?.textContent?.toLowerCase() ?? '';
+          const show = !q || name.includes(q);
+          t.style.display = show ? '' : 'none';
+          if (show) any = true;
+        });
+        section.style.display = any ? '' : 'none';
+        if (any) visible.add(section.id.replace('letra-', ''));
+      });
+      tabs.forEach((tab) => {
+        const l = tab.textContent?.trim() ?? '';
+        if (tab.tagName === 'A') (tab as HTMLElement).style.display = !q || visible.has(l) ? '' : 'none';
+      });
+    });
+  }
+</script>
 </Base>
