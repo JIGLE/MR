@@ -42,6 +42,7 @@ export function outletFor(url) {
   if (host.endsWith('voltaaomundo.pt')) return 'volta-ao-mundo';
   if (host.endsWith('dn.pt')) return 'diario-de-noticias';
   if (host.includes('noticiastv') || host === 'nm.pt') return 'noticias-tv';
+  if (host.endsWith('delas.pt')) return 'delas';
   return 'outros';
 }
 
