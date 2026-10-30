@@ -7,7 +7,7 @@ import { siteTitle } from '../lib/config';
 const articles = await getArticles();
 // The cover photo is the newest article that has one; the cover lines are the three newest articles.
 const coverArticle = articles.find((a) => a.data.cover);
-const coverImage = coverArticle?.data.cover && (await getImage({ src: coverArticle.data.cover, width: 2000 }));
+const coverImage = coverArticle?.data.cover && (await getImage({ src: coverArticle.data.cover, width: 3840, quality: 80 }));
 const lines = await Promise.all(articles.slice(0, 3).map(async (article) => ({ article, outlet: await outletOf(article) })));
 const outlets = (await getOutlets()).filter((o) => o.id !== 'outros').map((o) => o.data.name);
 const outletList = new Intl.ListFormat('pt-PT', { type: 'conjunction' }).format(outlets);
